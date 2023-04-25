@@ -64,6 +64,7 @@ int main(){
                     printf("Cpf --> %d\n",result_seach->cpf);
                     printf("Data de nascimento --> %s\n",result_seach->date_of_birth);
                     printf("Telefone --> %d\n",result_seach->fone);
+                    printf("Altura do no --> %d\n",result_seach->height);
                 }
                 else{
 
@@ -86,6 +87,7 @@ int main(){
     
 
     //fuction_print(root);
+    printf("%d", calculating_height(root)); 
 
 
     return 0;
