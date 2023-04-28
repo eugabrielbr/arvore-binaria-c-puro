@@ -1,3 +1,7 @@
+/*Autores: Gabriel Silva dos Santos (22211293) e
+Componente curricular: Estrutura de dados (EXA 806)
+Concluido em: 28/04/2023*/
+
 #include "tree.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,13 +14,14 @@ node *create_node(){ //funcao que cria um novo nó
 
 }   
 
-node *insert_node(node *root, int cpf, char *name, char *birth, int fone){ //funcao que insere uma nova folha/subarvore
+node *insert_node(node *root, long long int cpf, char *name, char *birth, int phone, char *cpf_str){ //funcao que insere uma nova folha/subarvore
 
     node *new_node = create_node();
     strcpy(new_node->name,name);
     strcpy(new_node->date_of_birth,birth); //inserindo informacoes da pessoa em um novo nó 
     new_node->cpf = cpf;
-    new_node->fone = fone;
+    strcpy(new_node->cpf_str,cpf_str);
+    new_node->phone = phone;
     new_node->left = NULL;
     new_node->right = NULL;
     new_node->height = 0;
@@ -30,18 +35,18 @@ node *insert_node(node *root, int cpf, char *name, char *birth, int fone){ //fun
 
         if (new_node->cpf < root->cpf){
         
-            root->left = insert_node(root->left,cpf,name,birth,fone); //se por acaso o novo cpf for menor que o cpf da raiz, a funcao recursiva percorre o lado esquerdo da arvore até entrar no caso base
+            root->left = insert_node(root->left,cpf,name,birth,phone,cpf_str); //se por acaso o novo cpf for menor que o cpf da raiz, a funcao recursiva percorre o lado esquerdo da arvore até entrar no caso base
             
         }
         else if(new_node->cpf > root->cpf){
-            root->right = insert_node(root->right,cpf,name,birth,fone); //se por acaso o novo cpf for maior que o cpf da raiz, a funcao recursiva percorre o lado direita da arvore até entrar no caso base
+            root->right = insert_node(root->right,cpf,name,birth,phone,cpf_str); //se por acaso o novo cpf for maior que o cpf da raiz, a funcao recursiva percorre o lado direita da arvore até entrar no caso base
         }
 
     }
 
-    root = height(root,root); //atualiza a altura dos nós do lado da árvore que foi inserido
+    root = height(root); //atualiza a altura dos nós do lado da árvore que foi inserido
     root = balancing(root); //chamada da função para os casos de balanceamento
-    root = height(root,root); //atualiza os ponteiros pós balanceamento
+    root = height(root); //atualiza os ponteiros pós balanceamento
 
     return root; //como a alteração ocorre diretamente no endereço do ponteiro root, left ou right, pode ser retornado a raiz normalmente para a main cm os ponteiros atualizados
 
@@ -69,7 +74,7 @@ node *balancing(node *root){
     return root;
 }
 
-int calculating_height(node *root){ //calcula a altura total da arvore
+int calculating_height(node *root){ //calcula a altura de um nó
 
     if (root == NULL){
 
@@ -94,7 +99,7 @@ int calculating_height(node *root){ //calcula a altura total da arvore
 
 }
 
-node *height(node *root, node *root2){ //chamei o mesmo ponteiro duas vezes porque ao retornar root retornaria null, entao retorno o mesmo endereço (só para retornar algo) mas cm os dados atualizados
+node *height(node *root){ //chamei o mesmo ponteiro duas vezes porque ao retornar root retornaria null, entao retorno o mesmo endereço (só para retornar algo) mas cm os dados atualizados
 
     
     if (root == NULL){ //caso a arvore esteja vazia, nao tem o que buscar
@@ -106,7 +111,7 @@ node *height(node *root, node *root2){ //chamei o mesmo ponteiro duas vezes porq
     else{
 
         root->height = calculating_height(root); //faz a chamada da função que calcula a altura do nó de acordo com seus filhos/subárvores
-        return root2; //retorna o mesmo endereço que a função recebeu, somente para retornar algo, ja que as alterações ocorrem direto no endereço dos nós
+        return root; //retorna o mesmo endereço que a função recebeu, somente para retornar algo, ja que as alterações ocorrem direto no endereço dos nós
     }
 
 
@@ -197,14 +202,86 @@ node *right_left_rotation(node *father){
 }
 
 
-node *delete(node *root, int cpf){ //funcao responsavel por deletar um determinado nó
+node *delete(node *root, long long int cpf){ //funcao responsavel por deletar um determinado nó
 
-    
+    if (root == NULL){
 
-}
+        return NULL;// caso root seja igual null, a arvore esta vazia
+    }
+    else{
+
+        if (root->cpf == cpf){ //se o cpf (key) for igual ao cpf que o nó esta guardando 
+            
+            if (root->left == NULL && root->right == NULL){ // caso seja golha, é dado free no nó e retornado NULL para o endereço que estava guardando o nó com o cpf (key)
+            
+                free(root); 
+                return NULL;
+            }
+            else{
+                
+                if (root->left == NULL || root->right == NULL){ //se os dois não forem igual a null, mas left OU right for, significa que o nó atual é uma subarvore com UM filho
+                    
+                    node *aux; //neste caso, foi criado um aux para que guarde este filho, para assim poder dar free o pai sem problemas
+
+                    if (root->left){ 
+                        
+                        aux = root->left; // guardando o filho left no aux
+
+                    }
+                    else{                                            
+
+                        aux = root->right; // guardando o filho right no aux
+                    
+                    }
+
+                    free(root); // da free no pai
+                    return aux;  //retorna o endereço do filho para o endereço que o pai estava guardado
+                }
+                else{
+
+                    node *aux = root->right; //guardo o filho direito do pai
+                    
+                    while (aux->left != NULL){ //percorro até o menor filho esquerdo de aux
+                        aux = aux->left;
+                    }
+                    
+                   //pai = nó que esta com a chave
+                    root->cpf = aux->cpf; //troca de informação entre o aux e o pai
+                    strcpy(root->name,aux->name); //troca de informação entre o aux e o pai
+                    strcpy(root->date_of_birth,aux->date_of_birth); //troca de informação entre o aux e o pai
+                    root->phone = aux->phone; //troca de informação entre o aux e o pai
+                    root->right = delete(root->right,aux->cpf); //como houve as trocas de informações, agora faço a recursão para remover o cpf desejado, pois como agora ele é folha, vai cair em um dos casos anteriores da função
+                    return root;
+                }
+            }
+        }
+        else{
+
+            if (cpf < root->cpf){ //caso o cpf (key) seja menor que o do nó atual, a recursao percorre o lado esquerdo da arvore até entrar em um dos casos bases
+                
+                root->left = delete(root->left,cpf);
+
+            }
+            else{
+
+                root->right = delete(root->right,cpf); //caso o cpf (key) seja maior que o do nó atual, a recursao percorre o lado direito da arvore até entrar em um dos casos bases
+            }
+        return root; //como a alteração ocorre diretamente no endereço do ponteiro root, left ou right, pode ser retornado a raiz normalmente para a main cm os ponteiros atualizados
+        }
+    }
+    root->height = whitch_is_bigger(whitch_is_the_height(root->left), whitch_is_the_height(root->right)) + 1; //atualiza a altura dos nós envolvidos
+    root = balancing(root); //confere se precisa balancear a arvore novamente
 
 
-node *search(node *root, int cpf){ //função de buscar pessoas na arvore
+    //root->height = height(root,root); //recalcula a altura de todos os nós
+
+    return root;
+
+    }
+
+
+
+node *search(node *root, long long int cpf){ //função de buscar pessoas na arvore
 
     if (root == NULL){ //caso a arvore esteja vazia, nao tem o que buscar
 
@@ -233,16 +310,16 @@ node *search(node *root, int cpf){ //função de buscar pessoas na arvore
 
 }
 
-void fuction_print(node *root){
+void fuction_print(node *root){ //so para printar todos os nos, um extra
 
     if (root){
         
-        fuction_print(root->left);
+        //fuction_print(root->left);
         //printf("%s  ",root->name);
-        printf("%d  ",root->cpf);
+        //printf("%lld  ",root->cpf);
         //printf("%s  ",root->date_of_birth);
-        //printf("%d  ",root->fone);
-        fuction_print(root->right);
+        //printf("%d  ",root->phone);
+        //fuction_print(root->right);
     }
 }
 
