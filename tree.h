@@ -1,28 +1,32 @@
+/*Autores: Gabriel Silva dos Santos (22211293) e
+Componente curricular: Estrutura de dados (EXA 806)
+Concluido em: 28/04/2023*/
+
 #ifndef TREE_H_INCLUDED
 #define TREE_H_INCLUDED
 
 typedef struct Node{
 
-    int cpf;
+    char cpf_str[50];
+    long long int cpf;
+    
     char name[50];
     char date_of_birth[20];
-    int fone;
-    
+    int phone;
     struct Node *left,*right;
     int height;
 
 } node;
 
-
 //referências das funções
 
 node *create_node();
 
-node *insert_node(node *root, int cpf, char *name, char *birth, int fone);
+node *insert_node(node *root, long long int cpf, char *name, char *birth, int phone, char *cpf_str);
 
-node *delete(node *root, int cpf);
+node *delete(node *root, long long int cpf);
 
-node *search(node *root, int cpf);
+node *search(node *root, long long int cpf);
 
 node *left_rotation(node *father);
 
@@ -32,7 +36,7 @@ node *left_right_rotation(node *father);
 
 node *right_left_rotation(node *father);
 
-node *height(node *root,node *root2);
+node *height(node *root);
 
 node *balancing(node *root);
 
