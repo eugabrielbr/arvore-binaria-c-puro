@@ -1,3 +1,7 @@
+/*Autores: Gabriel Silva dos Santos (22211293) e
+Componente curricular: Estrutura de dados (EXA 806)
+Concluido em: 28/04/2023*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
@@ -5,8 +9,9 @@
 int main(){
 
     node *root = NULL, *result_seach = NULL;
-    int cpf = 0,fone = 0,option = 0,remover = 0;
-    char name[50], birth[20];
+    int phone = 0,option = 0;
+    long long int cpf = 0,remover = 0;
+    char name[50], birth[20],cpf_str[50];
 
     do { 
         
@@ -25,12 +30,13 @@ int main(){
                 printf("Insira o nome: ");
                 scanf("%s", &name);
                 printf("Insira o cpf: ");
-                scanf("%d", &cpf);
+                scanf("%s", &cpf_str);
+                cpf = strtod(cpf_str,NULL);
                 printf("Insira a data de nascimento: ");
                 scanf("%s",&birth);
                 printf("Insira o telefone: ");
-                scanf("%d",&fone);
-                root = insert_node(root,cpf,name,birth,fone);
+                scanf("%d",&phone);
+                root = insert_node(root,cpf,name,birth,phone,cpf_str);
                 break;
             
             case 2:
@@ -47,7 +53,7 @@ int main(){
                 
                 }
                 else{
-                    printf("\nNenhum cadastro encontrado!\n");
+                    printf("\nNenhum cadastro correspondente encontrado!\n");
                 }
                 
                 break;
@@ -55,16 +61,16 @@ int main(){
             case 3:
 
                 printf("Insira o cpf da pessoa que deseja buscar: ");
-                scanf("%d",&remover);
+                scanf("%lld",&remover);
                 result_seach = search(root,remover);
 
                 if (result_seach){
 
                     printf("\nNome --> %s\n",result_seach->name);
-                    printf("Cpf --> %d\n",result_seach->cpf);
+                    printf("Cpf --> %s\n",result_seach->cpf_str);
                     printf("Data de nascimento --> %s\n",result_seach->date_of_birth);
-                    printf("Telefone --> %d\n",result_seach->fone);
-                    printf("Altura do no --> %d\n",result_seach->height);
+                    printf("Telefone --> %d\n",result_seach->phone);
+
                 }
                 else{
 
@@ -85,10 +91,6 @@ int main(){
 
     } while (option != 4);
     
-
-    //fuction_print(root);
-    printf("%d", calculating_height(root)); 
-
 
     return 0;
     
